@@ -53,7 +53,7 @@ public class MainMenuScript : MonoBehaviour
         pauseScreen.SetActive(false);
     }
    
-    public void TakeDamage()
+    public void TakeDamageUI()
     {
         StartCoroutine(ShowTimer(takeDamage));
         

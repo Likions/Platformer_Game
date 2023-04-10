@@ -5,15 +5,36 @@ using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
+
+    public class Player
+    {
+        public string name;
+        public int powerUps;
+
+        public Player(string n, int p)
+        {
+            name = n;
+            powerUps = p;
+        }
+
+        public void UsePower()
+        {
+            powerUps--;
+        }
+    }
+
     private GameManager gameManager;
     public ParticleSystem attackPartical;
     public GameObject damageZone;
 
     private Animator animator;
     private MainMenuScript mainMenuScript;
-
+    private PlayerMove playerMove;
     private bool isDamage;
     public GameObject textPressF;
+
+    public Player player1 =  new Player("Player 1", 2);
+   
 
     void Start()
     {
@@ -22,18 +43,14 @@ public class PlayerManager : MonoBehaviour
         mainMenuScript = GameObject.Find("UI").GetComponent<MainMenuScript>();
         isDamage = false;
         textPressF.SetActive(false);
+        playerMove = GetComponent<PlayerMove>();
     }
 
     
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            attackPartical.Play();
-            Instantiate(damageZone,transform.position,damageZone.transform.rotation);
-            animator.SetTrigger("Jump_trig");
-
-        }
+        makeDamage();
+        PowerUp();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -72,12 +89,31 @@ public class PlayerManager : MonoBehaviour
     }
 
 
+    private void makeDamage()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            attackPartical.Play();
+            Instantiate(damageZone, transform.position, damageZone.transform.rotation);
+            animator.SetTrigger("Jump_trig");
 
+        }
+    }
+
+    private void PowerUp()
+    {
+        if (Input.GetKeyDown(KeyCode.Z) && player1.powerUps > 0)
+        {
+            player1.UsePower();
+            playerMove.moveSpeed += 10;
+        }
+        
+    }
     IEnumerator checkDamage()
     {
         isDamage = true;
         gameManager.UpdateLives(-1);
-        mainMenuScript.TakeDamage();
+        mainMenuScript.TakeDamageUI();
         yield return new WaitForSeconds(1.5f);
         isDamage = false;
     }
